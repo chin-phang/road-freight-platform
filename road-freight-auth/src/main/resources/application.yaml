@@ -1,0 +1,21 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: road-freight-auth
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/road_freight_db
+    username: appuser
+    password: appsecret
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+jwt:
+  secret-key: YourSuperLongAndSecureSecretKeyMustBeAtLeast256BitsLong
+  expiration-ms: 3600000

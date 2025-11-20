@@ -1,0 +1,154 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------
+  # API Gateway & Service Discovery
+  # ----------------------------------------
+  consul:
+    image: hashicorp/consul:1.14
+    container_name: consul
+    command: "agent -server -bootstrap-expect=1 -ui -client=0.0.0.0"
+    ports:
+      - "8500:8500"    # Consul UI & API
+      - "8600:8600/udp" # Consul DNS
+    networks:
+      - road-freight-net
+
+  api-gateway:
+    image: kong:3.1
+    container_name: api-gateway
+    environment:
+      # Use Consul for DNS resolution
+      KONG_DNS_RESOLVER: "consul:8600"
+      # Run in DB-less mode
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: "/etc/kong/kong.yml"
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
+      KONG_PROXY_LISTEN: "0.0.0.0:8000"
+    volumes:
+      - ./kong.yml:/etc/kong/kong.yml
+    ports:
+      - "8000:8000" # Proxy for clients
+      - "8001:8001" # Admin API
+    networks:
+      - road-freight-net
+    depends_on:
+      - consul
+
+  # ----------------------------------------
+  # Application Services
+  # ----------------------------------------
+  database:
+    image: postgis/postgis:15-3.4
+    container_name: database
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: freight_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - road-freight-net
+
+  cache:
+    image: redis:7-alpine
+    container_name: cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - road-freight-net
+
+  message-broker:
+    image: rabbitmq:3.11-management-alpine
+    container_name: message-broker
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - road-freight-net
+
+  # ----------------------------------------
+  # Observability Stack (O11y)
+  # ----------------------------------------
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.75.0
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP HTTP receiver
+      - "8889:8889" # Prometheus metrics exporter
+    networks:
+      - road-freight-net
+    depends_on:
+      - tempo
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus:v2.44.0
+    container_name: prometheus
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090" # Prometheus UI
+    networks:
+      - road-freight-net
+
+  tempo:
+    image: grafana/tempo:2.1.0
+    container_name: tempo
+    command: ["-config.file=/etc/tempo.yml"]
+    volumes:
+      - ./tempo.yml:/etc/tempo.yml
+      - tempo-data:/tmp/tempo
+    # No ports exposed to host, only internal communication from otel-collector
+    networks:
+      - road-freight-net
+
+  grafana:
+    image: grafana/grafana:9.5.1
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000" # Grafana UI
+    networks:
+      - road-freight-net
+    depends_on:
+      - prometheus
+      - tempo
+
+# ----------------------------------------
+# Volumes & Networks
+# ----------------------------------------
+volumes:
+  postgres-data:
+  redis-data:
+  rabbitmq-data:
+  prometheus-data:
+  tempo-data:
+  grafana-data:
+
+networks:
+  road-freight-net:
+    driver: bridge

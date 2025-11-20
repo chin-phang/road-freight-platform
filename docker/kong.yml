@@ -1,0 +1,13 @@
+_format_version: "3.0"
+
+# Add your services and routes here
+# Example (uncomment to use):
+# services:
+# - name: my-service
+#   # Use Consul's DNS to find a service registered as 'my-app'
+#   host: my-app.service.consul
+#   port: 8080
+#   routes:
+#   - name: my-route
+#     paths:
+#     - /my-app

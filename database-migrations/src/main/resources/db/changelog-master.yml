@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: auth/changelog-auth.yml
+      relativeToChangelogFile: true
+  - include:
+      file: core/changelog-core.yml
+      relativeToChangelogFile: true
