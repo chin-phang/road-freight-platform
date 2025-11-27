@@ -1,4 +1,4 @@
-package com.minelog.road_freight_auth;
+package com.minelog.road.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

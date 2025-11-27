@@ -21,7 +21,7 @@ liquibase {
             "username" to "appuser",
             "password" to "appsecret",
             "driver" to "org.postgresql.Driver",
-            "changelogFile" to "src/main/resources/db/changelog-master.yml"
+            "changelogFile" to "src/main/resources/db/changelog-master.yaml"
         )
     }
 }

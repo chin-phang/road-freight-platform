@@ -1,0 +1,35 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  # Export metrics as a scrape endpoint for Prometheus
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    namespace: default
+
+  # Send traces to Tempo
+  otlp:
+    endpoint: tempo:4317 # Using gRPC
+    tls:
+      insecure: true
+
+  # Data sources: traces, metrics, logs
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      exporters: [prometheus, debug]
+    traces:
+      receivers: [otlp]
+      exporters: [otlp, debug]
+    logs:
+      receivers: [otlp]
+      exporters: [debug]

@@ -1,14 +1,12 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id("java")
-    id("org.springframework.boot") version "3.5.7" apply false
-    id("io.spring.dependency-management") version "1.1.7"
+    java
+    id("org.springframework.boot") version "3.5.8"
 }
 
 allprojects {
     group = "com.minelog"
-    version = "0.0.1-SNAPSHOT"
 
     repositories {
         mavenCentral()
@@ -17,23 +15,15 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "org.springframework.boot")
 
     java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(25)
-        }
+        sourceCompatibility = JavaVersion.VERSION_21
     }
 
-    extra["springCloudVersion"] = "2025.0.0"
-
-    dependencyManagement {
-        imports {
-            mavenBom(SpringBootPlugin.BOM_COORDINATES)
-        }
-    }
-
-    tasks.withType<Test> {
-        useJUnitPlatform()
+    dependencies {
+        implementation(platform(SpringBootPlugin.BOM_COORDINATES))
+        implementation("org.projectlombok:lombok")
+        annotationProcessor("org.projectlombok:lombok")
     }
 }

@@ -1,13 +1,13 @@
-package com.minelog.road_freight_core;
+package com.minelog.road.job;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RoadFreightCoreApplication {
+public class RoadFreightJobApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RoadFreightCoreApplication.class, args);
+		SpringApplication.run(RoadFreightJobApplication.class, args);
 	}
 
 }

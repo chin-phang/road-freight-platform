@@ -1,11 +1,13 @@
 version: '3.8'
 
+name: road-freight-platform
+
 services:
   # ----------------------------------------
   # API Gateway & Service Discovery
   # ----------------------------------------
   consul:
-    image: hashicorp/consul:1.14
+    image: hashicorp/consul:1.22
     container_name: consul
     command: "agent -server -bootstrap-expect=1 -ui -client=0.0.0.0"
     ports:
@@ -14,51 +16,26 @@ services:
     networks:
       - road-freight-net
 
-  api-gateway:
-    image: kong:3.1
-    container_name: api-gateway
-    environment:
-      # Use Consul for DNS resolution
-      KONG_DNS_RESOLVER: "consul:8600"
-      # Run in DB-less mode
-      KONG_DATABASE: "off"
-      KONG_DECLARATIVE_CONFIG: "/etc/kong/kong.yml"
-      KONG_PROXY_ACCESS_LOG: /dev/stdout
-      KONG_ADMIN_ACCESS_LOG: /dev/stdout
-      KONG_PROXY_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
-      KONG_PROXY_LISTEN: "0.0.0.0:8000"
-    volumes:
-      - ./kong.yml:/etc/kong/kong.yml
-    ports:
-      - "8000:8000" # Proxy for clients
-      - "8001:8001" # Admin API
-    networks:
-      - road-freight-net
-    depends_on:
-      - consul
-
   # ----------------------------------------
   # Application Services
   # ----------------------------------------
-  database:
-    image: postgis/postgis:15-3.4
-    container_name: database
+  postgis:
+    image: postgis/postgis:18-3.6
+    container_name: postgis
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: freight_db
+      POSTGRES_DB: road_freight_db
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     networks:
       - road-freight-net
 
-  cache:
-    image: redis:7-alpine
-    container_name: cache
+  redis:
+    image: redis:8.4.0-alpine
+    container_name: redis
     ports:
       - "6379:6379"
     volumes:
@@ -66,9 +43,9 @@ services:
     networks:
       - road-freight-net
 
-  message-broker:
-    image: rabbitmq:3.11-management-alpine
-    container_name: message-broker
+  rabbitmq:
+    image: rabbitmq:4.2.1-management-alpine
+    container_name: rabbitmq
     ports:
       - "5672:5672"    # AMQP port
       - "15672:15672" # Management UI
@@ -84,11 +61,11 @@ services:
   # Observability Stack (O11y)
   # ----------------------------------------
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.75.0
+    image: otel/opentelemetry-collector-contrib:0.140.1
     container_name: otel-collector
-    command: ["--config=/etc/otel-collector-config.yml"]
+    command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
-      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
       - "4317:4317" # OTLP gRPC receiver
       - "4318:4318" # OTLP HTTP receiver
@@ -96,15 +73,16 @@ services:
     networks:
       - road-freight-net
     depends_on:
-      - tempo
       - prometheus
+      - tempo
+      - loki
 
   prometheus:
-    image: prom/prometheus:v2.44.0
+    image: prom/prometheus:v3.7.3
     container_name: prometheus
-    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    command: ["--config.file=/etc/prometheus.yaml"]
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yaml:/etc/prometheus.yaml
       - prometheus-data:/prometheus
     ports:
       - "9090:9090" # Prometheus UI
@@ -112,23 +90,33 @@ services:
       - road-freight-net
 
   tempo:
-    image: grafana/tempo:2.1.0
+    image: grafana/tempo:2.9.0
     container_name: tempo
-    command: ["-config.file=/etc/tempo.yml"]
+    command: ["-config.file=/etc/tempo.yaml"]
     volumes:
-      - ./tempo.yml:/etc/tempo.yml
-      - tempo-data:/tmp/tempo
+      - ./tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/var/tempo
     # No ports exposed to host, only internal communication from otel-collector
     networks:
       - road-freight-net
 
+  loki:
+    image: grafana/loki:3.6.2
+    container_name: loki
+    command: ["-config.file=/etc/loki/loki.yaml"]
+    volumes:
+      - ./loki.yaml:/etc/loki/loki.yaml
+      - loki-data:/loki
+    ports:
+      - "3100:3100"
+
   grafana:
-    image: grafana/grafana:9.5.1
+    image: grafana/grafana:12.3.0
     container_name: grafana
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
-      - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/grafana-datasources.yaml
       - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000" # Grafana UI
@@ -136,6 +124,7 @@ services:
       - road-freight-net
     depends_on:
       - prometheus
+      - loki
       - tempo
 
 # ----------------------------------------
@@ -147,6 +136,7 @@ volumes:
   rabbitmq-data:
   prometheus-data:
   tempo-data:
+  loki-data:
   grafana-data:
 
 networks:

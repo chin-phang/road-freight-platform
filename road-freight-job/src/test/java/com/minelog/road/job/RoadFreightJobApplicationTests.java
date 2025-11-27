@@ -1,10 +1,10 @@
-package com.minelog.road_freight_core;
+package com.minelog.road.job;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RoadFreightCoreApplicationTests {
+class RoadFreightJobApplicationTests {
 
 	@Test
 	void contextLoads() {
