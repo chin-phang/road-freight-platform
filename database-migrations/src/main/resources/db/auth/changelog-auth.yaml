@@ -29,3 +29,7 @@ databaseChangeLog:
             type: varchar(50)
             constraints:
               nullable: false
+
+      - include:
+          file: fragments/audit-columns.yaml
+          relativeToChangelogFile: true

@@ -1,10 +1,7 @@
-package com.minelog.shared.common.entity;
+package com.minelog.shared.common.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Objects;
 
@@ -13,7 +10,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-public class User extends Auditable {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
+public class User extends CustomAudit {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "app_user_id_seq")

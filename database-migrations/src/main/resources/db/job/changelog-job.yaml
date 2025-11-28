@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-    id: 1
-    author: aaron_lee
+    id: 2
+    author: aaron.lee
     changes:
       - createTable:
         tableName: job
@@ -31,3 +31,7 @@ databaseChangeLog:
             type: varchar(50)
             constraints:
               nullable: false
+
+      - include:
+          file: fragments/audit-columns.yaml
+          relativeToChangelogFile: true
