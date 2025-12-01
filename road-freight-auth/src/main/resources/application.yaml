@@ -7,8 +7,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/road_freight_db
-    username: appuser
-    password: appsecret
+    username: user
+    password: password
     driver-class-name: org.postgresql.Driver
 
   jpa:

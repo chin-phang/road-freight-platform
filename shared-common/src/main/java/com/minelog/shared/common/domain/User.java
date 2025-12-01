@@ -2,16 +2,18 @@ package com.minelog.shared.common.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "app_user")
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(callSuper = true)
+@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 public class User extends CustomAudit {
 
   @Id
@@ -31,6 +33,25 @@ public class User extends CustomAudit {
 
   @Column(nullable = false, unique = true)
   private String email;
+
+  private boolean enabled;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Builder.Default
+  @ToString.Exclude
+  private List<UserRole> roles = new ArrayList<>();
+
+  public void addRole(Role role) {
+    UserRole userRole = UserRole.builder()
+        .user(this)
+        .role(role)
+        .build();
+    this.roles.add(userRole);
+  }
+
+  public void removeRole(Role role) {
+    this.roles.removeIf(ur -> ur.getRole().equals(role));
+  }
 
   @Override
   public boolean equals(Object o) {

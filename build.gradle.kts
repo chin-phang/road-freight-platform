@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     java
-    id("org.springframework.boot") version "3.5.8"
+    id("org.springframework.boot") version "3.5.8" apply false
 }
 
 allprojects {
@@ -15,15 +15,13 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "org.springframework.boot")
 
     java {
         sourceCompatibility = JavaVersion.VERSION_21
     }
 
     dependencies {
-        implementation(platform(SpringBootPlugin.BOM_COORDINATES))
-        implementation("org.projectlombok:lombok")
-        annotationProcessor("org.projectlombok:lombok")
+        implementation("org.projectlombok:lombok:1.18.42")
+        annotationProcessor("org.projectlombok:lombok:1.18.42")
     }
 }

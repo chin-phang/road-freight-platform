@@ -2,16 +2,18 @@ package com.minelog.shared.common.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
+@MappedSuperclass
 @Getter
 @Setter
 @ToString
-@MappedSuperclass
+@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class CustomAudit {
 
   @Column(name = "created_at", nullable = false, updatable = false)

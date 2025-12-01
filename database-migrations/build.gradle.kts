@@ -1,5 +1,4 @@
 plugins {
-    java
     id("org.liquibase.gradle") version "3.0.2"
 }
 
@@ -18,8 +17,8 @@ liquibase {
     activities.register("main") {
         arguments = mapOf(
             "url" to "jdbc:postgresql://localhost:5432/road_freight_db",
-            "username" to "appuser",
-            "password" to "appsecret",
+            "username" to "user",
+            "password" to "password",
             "driver" to "org.postgresql.Driver",
             "changelogFile" to "src/main/resources/db/changelog-master.yaml"
         )

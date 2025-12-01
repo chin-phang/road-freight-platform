@@ -1,35 +1,39 @@
 databaseChangeLog:
   - changeSet:
-    id: 1
-    author: aaron_lee
+    id: create-user-table
+    author: aaron.lee
     changes:
       - createTable:
         tableName: app_user
         columns:
-          - column:
-            name: id
-            type: bigint
-            autoIncrement: true
-            constraints:
-              primaryKey: true
-              nullable: false
-          - column:
-            name: email
-            type: varchar(255)
-            constraints:
-              nullable: false
-              unique: true
-          - column:
-            name: password
-            type: varchar(255)
-            constraints:
-              nullable: false
-          - column:
-            name: role
-            type: varchar(50)
-            constraints:
-              nullable: false
+          - column: { name: id, type: BIGSERIAL, constraints: { primaryKey: true, nullable: false } }
+          - column: { name: password, type: VARCHAR(100), constraints: { nullable: false } }
+          - column: { name: email, type: VARCHAR(100), constraints: { nullable: false, unique: true } ]}
+  - include: { file: fragments/audit-columns.yaml, relativeToChangelogFile: true }
 
-      - include:
-          file: fragments/audit-columns.yaml
-          relativeToChangelogFile: true
+  - changeSet:
+    id: create-role-table
+    author: aaron.lee
+    changes:
+      - createTable:
+        tableName: role
+        columns:
+          - column: { name: id, type: BIGSERIAL, constraints: { primaryKey: true } }
+          - column: { name: name, type: VARCHAR(50), constraints: { nullable: false, unique: true } }
+  - include: { file: db/changelog/fragments/add-audit-columns.yaml, relativeToChangelogFile: true }
+
+  - changeSet:
+    id: create-user-roles-table
+    author: auth-team
+    changes:
+      - createTable:
+        tableName: user_role
+        columns:
+          - column: { name: id, type: BIGSERIAL, constraints: { primaryKey: true } }
+          - column: { name: user_id, type: BIGSERIAL, constraints: { nullable: false, foreignKeyName: fk_user_role_user_id, references: user(id) } }
+          - column: { name: role_id, type: BIGSERIAL, constraints: { nullable: false, foreignKeyName: fk_user_role_role_id, references: role(id) } }
+      - addUniqueConstraint:
+          tableName: user_role
+          columnNames: user_id, role_id
+          constraintName: uq_user_id_role_id
+  - include: { file: db/changelog/fragments/add-audit-columns.yaml, relativeToChangelogFile: true }
