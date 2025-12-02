@@ -1,8 +1,5 @@
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
 plugins {
     java
-    id("org.springframework.boot") version "3.5.8" apply false
 }
 
 allprojects {
