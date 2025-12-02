@@ -1,9 +1,9 @@
 plugins {
-    java
+    id 'java'
 }
 
 allprojects {
-    group = "com.minelog"
+    group = 'com.minelog'
 
     repositories {
         mavenCentral()
@@ -11,14 +11,14 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "java")
+    apply plugin: 'java'
 
     java {
         sourceCompatibility = JavaVersion.VERSION_21
     }
 
     dependencies {
-        implementation("org.projectlombok:lombok:1.18.42")
-        annotationProcessor("org.projectlombok:lombok:1.18.42")
+        implementation 'org.projectlombok:lombok:1.18.42'
+        annotationProcessor 'org.projectlombok:lombok:1.18.42'
     }
 }
