@@ -30,7 +30,6 @@ public class Role extends CustomAudit {
   @Column(nullable = false, unique = true)
   private String name;
 
-  // Inverse side of the relationship
   @OneToMany(mappedBy = "role")
   @Builder.Default
   @ToString.Exclude

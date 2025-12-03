@@ -10,6 +10,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,10 +26,15 @@ public class SecurityConfig {
     http
         .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for microservices
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**").permitAll() // Allow login/register
+            .requestMatchers(
+                "/auth/**",
+                "/v3/api-docs/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**"
+            ).permitAll() // Allow login/register and OpenAPI/Swagger docs
             .anyRequest().authenticated()
-        );
-    // .sessionManagement(...) // We will add Stateless/JWT here later
+        )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     return http.build();
   }

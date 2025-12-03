@@ -7,8 +7,10 @@ databaseChangeLog:
             tableName: app_user
             columns:
               - column: { name: id, type: bigserial, constraints: { primaryKey: true, nullable: false } }
-              - column: { name: password, type: varchar(100), constraints: { nullable: false } }
+              - column: { name: username, type: varchar(100), constraints: { nullable: false } }
+              - column: { name: password, type: varchar(50), constraints: { nullable: false } }
               - column: { name: email, type: varchar(100), constraints: { nullable: false, unique: true } }
+              - column: { name: enabled, type: tinyint, defaultValue: 1, constraints: { nullable: false } }
               - &audit_created_at
                 column: { name: created_at, type: timestamp, defaultValueComputed: current_timestamp, constraints: { nullable: false, unique: true } }
               - &audit_created_by
