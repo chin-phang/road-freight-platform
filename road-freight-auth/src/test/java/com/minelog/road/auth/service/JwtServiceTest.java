@@ -60,10 +60,8 @@ class JwtServiceTest {
 
   @Test
   void generateToken_WhenValidUserDetails_ReturnsValidToken() {
-    // When
     String token = jwtService.generateToken(authUser);
 
-    // Then
     assertThat(token).isNotNull();
     assertThat(token).isNotEmpty();
     assertThat(token.split("\\.")).hasSize(3); // JWT has 3 parts: header.payload.signature
@@ -71,12 +69,10 @@ class JwtServiceTest {
 
    @Test
    void generateToken_WhenCalledMultipleTimes_GeneratesDifferentTokens() throws InterruptedException {
-     // When
      String token1 = jwtService.generateToken(authUser);
      Thread.sleep(1000);
      String token2 = jwtService.generateToken(authUser);
 
-     // Then
      assertThat(token1).isNotEqualTo(token2); // Different issuedAt times
      assertThat(token1.split("\\.")).hasSize(3);
      assertThat(token2.split("\\.")).hasSize(3);
@@ -84,7 +80,6 @@ class JwtServiceTest {
 
   @Test
   void generateToken_WhenCalledWithDifferentUsers_GeneratesDifferentTokens() {
-    // Given
     User user2 = User.builder()
         .id(2L)
         .username("user2")
@@ -94,20 +89,16 @@ class JwtServiceTest {
         .build();
     AuthUser authUser2 = new AuthUser(user2);
 
-    // When
     String token1 = jwtService.generateToken(authUser);
     String token2 = jwtService.generateToken(authUser2);
 
-    // Then
     assertThat(token1).isNotEqualTo(token2);
   }
 
   @Test
   void getExpirationMs_ReturnsConfiguredValue() {
-    // When
     long expirationMs = jwtService.getExpirationMs();
 
-    // Then
     assertThat(expirationMs).isEqualTo(EXPIRATION_MS);
   }
 }

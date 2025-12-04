@@ -41,7 +41,6 @@
         <version>${liquibase.version}</version>
         <configuration>
           <changeLogFile>src/main/resources/db/changelog/db.changelog-master.yaml</changeLogFile>
-
           <driver>org.postgresql.Driver</driver>
           <url>jdbc:postgresql://localhost:5432/road_freight_db</url>
           <username>user</username>

@@ -42,14 +42,11 @@ class CustomUserDetailsServiceTest {
 
   @Test
   void loadUserByUsername_WhenUserExists_ReturnsAuthUser() {
-    // Given
     String email = "test@example.com";
     when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-    // When
     UserDetails result = userDetailsService.loadUserByUsername(email);
 
-    // Then
     assertThat(result).isNotNull();
     assertThat(result).isInstanceOf(AuthUser.class);
     assertThat(result.getUsername()).isEqualTo("testuser");
@@ -59,11 +56,9 @@ class CustomUserDetailsServiceTest {
 
   @Test
   void loadUserByUsername_WhenUserDoesNotExist_ThrowsUsernameNotFoundException() {
-    // Given
     String email = "nonexistent@example.com";
     when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-    // When/Then
     assertThatThrownBy(() -> userDetailsService.loadUserByUsername(email))
         .isInstanceOf(UsernameNotFoundException.class)
         .hasMessageContaining("User not found with email: " + email);
@@ -71,29 +66,23 @@ class CustomUserDetailsServiceTest {
 
   @Test
   void loadUserByUsername_WhenUserIsDisabled_ReturnsDisabledAuthUser() {
-    // Given
     testUser.setEnabled(false);
     String email = "test@example.com";
     when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-    // When
     UserDetails result = userDetailsService.loadUserByUsername(email);
 
-    // Then
     assertThat(result).isNotNull();
     assertThat(result.isEnabled()).isFalse();
   }
 
   @Test
   void loadUserByUsername_VerifiesAccountStatusFlags() {
-    // Given
     String email = "test@example.com";
     when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-    // When
     UserDetails result = userDetailsService.loadUserByUsername(email);
 
-    // Then
     assertThat(result.isAccountNonExpired()).isTrue();
     assertThat(result.isAccountNonLocked()).isTrue();
     assertThat(result.isCredentialsNonExpired()).isTrue();

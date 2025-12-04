@@ -1,4 +1,4 @@
-package com.minelog.road.gateway.security;
+package com.minelog.road.gateway.service;
 
 import com.minelog.road.gateway.config.JwtProperties;
 import io.jsonwebtoken.Claims;

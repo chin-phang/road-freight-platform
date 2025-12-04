@@ -16,6 +16,32 @@ spring:
       ddl-auto: none
     show-sql: true
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        service-name: ${spring.application.name}
+        prefer-ip-address: true
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
 jwt:
   secret-key: YourSuperLongAndSecureSecretKeyMustBeAtLeast256BitsLong
   expiration-ms: 3600000

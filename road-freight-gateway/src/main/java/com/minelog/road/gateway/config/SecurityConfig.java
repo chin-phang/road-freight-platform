@@ -1,5 +1,6 @@
-package com.minelog.road.gateway.security;
+package com.minelog.road.gateway.config;
 
+import com.minelog.road.gateway.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,14 +45,15 @@ public class SecurityConfig {
         .csrf(ServerHttpSecurity.CsrfSpec::disable)
         .authorizeExchange(exchanges -> exchanges
             .pathMatchers(
-                "/auth/**",
+                "/actuator/health",
+                "/api/auth/**",
                 "/v3/api-docs/**",
                 "/swagger-ui.html",
                 "/swagger-ui/**"
             ).permitAll()
             .anyExchange().authenticated()
         )
-        .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION)
+        .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION)
         .build();
   }
 
