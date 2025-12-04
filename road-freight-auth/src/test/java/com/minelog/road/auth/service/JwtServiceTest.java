@@ -69,17 +69,18 @@ class JwtServiceTest {
     assertThat(token.split("\\.")).hasSize(3); // JWT has 3 parts: header.payload.signature
   }
 
-  // @Test
-  // void generateToken_WhenCalledMultipleTimes_GeneratesDifferentTokens() {
-  //   // When
-  //   String token1 = jwtService.generateToken(authUser);
-  //   String token2 = jwtService.generateToken(authUser);
+   @Test
+   void generateToken_WhenCalledMultipleTimes_GeneratesDifferentTokens() throws InterruptedException {
+     // When
+     String token1 = jwtService.generateToken(authUser);
+     Thread.sleep(1000);
+     String token2 = jwtService.generateToken(authUser);
 
-  //   // Then
-  //   assertThat(token1).isNotEqualTo(token2); // Different issuedAt times
-  //   assertThat(token1.split("\\.")).hasSize(3);
-  //   assertThat(token2.split("\\.")).hasSize(3);
-  // }
+     // Then
+     assertThat(token1).isNotEqualTo(token2); // Different issuedAt times
+     assertThat(token1.split("\\.")).hasSize(3);
+     assertThat(token2.split("\\.")).hasSize(3);
+   }
 
   @Test
   void generateToken_WhenCalledWithDifferentUsers_GeneratesDifferentTokens() {
