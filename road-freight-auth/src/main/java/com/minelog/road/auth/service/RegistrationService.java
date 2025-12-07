@@ -1,6 +1,5 @@
 package com.minelog.road.auth.service;
 
-import com.minelog.road.auth.domain.AuthUser;
 import com.minelog.road.auth.dto.RegisterRequest;
 import com.minelog.road.auth.dto.RegisterResponse;
 import com.minelog.road.auth.repository.UserRepository;
@@ -34,11 +33,8 @@ public class RegistrationService {
 
     try {
       User saved = userRepository.save(user);
-      AuthUser authUser = new AuthUser(saved);
-      String token = jwtService.generateToken(authUser);
-      long expiresInMs = jwtService.getExpirationMs();
 
-      return new RegisterResponse(saved.getId(), token, expiresInMs);
+      return new RegisterResponse(saved.getId());
     } catch (DataIntegrityViolationException ex) {
       // In case of a race condition with unique constraints
       throw new IllegalArgumentException("User with given email or username already exists", ex);

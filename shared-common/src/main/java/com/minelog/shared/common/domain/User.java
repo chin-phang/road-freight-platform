@@ -1,5 +1,6 @@
 package com.minelog.shared.common.domain;
 
+import com.minelog.shared.common.util.BooleanToSmallintConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -34,7 +35,9 @@ public class User extends CustomAudit {
   @Column(nullable = false, unique = true)
   private String email;
 
-  private boolean enabled;
+  @Column(columnDefinition = "smallint")
+  @Convert(converter = BooleanToSmallintConverter.class)
+  private Boolean enabled;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   @Builder.Default

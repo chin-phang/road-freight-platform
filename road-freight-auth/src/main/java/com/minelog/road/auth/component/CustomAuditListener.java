@@ -40,8 +40,14 @@ public class CustomAuditListener {
   }
 
   private String getCurrentUser() {
-    return auditorAwareFactory.getObject()
+    String auditor = auditorAwareFactory.getObject()
         .getCurrentAuditor()
         .orElse("system");
+
+    if ("anonymousUser".equalsIgnoreCase(auditor)) {
+      return "system";
+    }
+
+    return auditor;
   }
 }

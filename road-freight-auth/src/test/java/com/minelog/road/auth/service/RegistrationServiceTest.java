@@ -98,7 +98,7 @@ class RegistrationServiceTest {
     when(passwordEncoder.encode(validRequest.password())).thenReturn(ENCODED_PASSWORD);
     when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
       User user = invocation.getArgument(0);
-      assertThat(user.isEnabled()).isTrue();
+      assertThat(user.getEnabled()).isTrue();
       return savedUser;
     });
     when(jwtService.generateToken(any(AuthUser.class))).thenReturn(JWT_TOKEN);
@@ -167,7 +167,7 @@ class RegistrationServiceTest {
       assertThat(user.getUsername()).isEqualTo(validRequest.username());
       assertThat(user.getEmail()).isEqualTo(validRequest.email());
       assertThat(user.getPassword()).isEqualTo(ENCODED_PASSWORD);
-      assertThat(user.isEnabled()).isTrue();
+      assertThat(user.getEnabled()).isTrue();
       return savedUser;
     });
     when(jwtService.generateToken(any(AuthUser.class))).thenReturn(JWT_TOKEN);

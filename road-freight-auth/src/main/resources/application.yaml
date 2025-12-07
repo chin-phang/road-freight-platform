@@ -34,7 +34,6 @@ spring:
       host: localhost
       port: 8500
       discovery:
-        enabled: true
         service-name: ${spring.application.name}
         prefer-ip-address: true
         health-check-path: /actuator/health

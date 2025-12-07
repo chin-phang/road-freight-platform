@@ -1,7 +1,6 @@
 logging:
   level:
     org.springframework.cloud.gateway: TRACE
-    org.springframework.web.server.adapter.HttpWebHandlerAdapter: TRACE
     org.springframework.http.server.reactive: DEBUG
     org.springframework.web.reactive: DEBUG
     reactor.netty: DEBUG
@@ -17,9 +16,10 @@ spring:
     gateway:
       server:
         webflux:
-          discovery:
-            locator:
-              enabled: false
+          httpclient:
+            wiretap: true
+          httpserver:
+            wiretap: true
           routes:
             - id: auth-service-route
               uri: lb://road-freight-auth
@@ -33,8 +33,8 @@ spring:
       host: localhost
       port: 8500
       discovery:
-        register: true
         service-name: ${spring.application.name}
+        prefer-ip-address: true
         health-check-path: /actuator/health
         health-check-interval: 10s
 
