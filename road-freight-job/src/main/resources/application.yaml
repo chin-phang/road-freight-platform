@@ -1,3 +1,10 @@
+logging:
+  level:
+    root: INFO
+    com.minelog.road.job: DEBUG
+    org.springframework: INFO
+    org.hibernate: WARN
+
 server:
   port: 8082
 

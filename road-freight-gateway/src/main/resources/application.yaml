@@ -1,6 +1,7 @@
 logging:
   level:
     org.springframework.cloud.gateway: TRACE
+    org.springframework.web.server.adapter.HttpWebHandlerAdapter: TRACE
     org.springframework.http.server.reactive: DEBUG
     org.springframework.web.reactive: DEBUG
     reactor.netty: DEBUG
@@ -10,16 +11,23 @@ server:
 
 spring:
   application:
-    name: gateway
+    name: road-freight-gateway
 
   cloud:
-    routes:
-      - id: auth-service-route
-        uri: http://localhost:8081
-        predicates:
-          - Path=/api/auth/**
-        filters:
-          - RewritePath=/api/auth/(?<segment>.*), /auth/$\{segment}
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+          routes:
+            - id: auth-service-route
+              uri: lb://road-freight-auth
+              predicates:
+                - Path=/api/auth/**
+                - Method=POST
+              filters:
+                - RewritePath=/api/auth/(?<segment>.*), /auth/$\{segment}
 
     consul:
       host: localhost
